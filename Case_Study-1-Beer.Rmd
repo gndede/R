@@ -1,0 +1,102 @@
+---
+title: "Beerdata"
+author: "Ndede, George M."
+date: "2/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+# Load Libraries
+library(dplyr)      # for string functions//Heavy use of this library
+library(ggplot2)    # for plots
+library(kableExtra) # for table formatting// library to make the document more presentable
+library(knitr)      # for presenting in html
+library(stringr)    # for str_trim function
+library(ggthemes)  # for themes in ggplot
+library(tidyr)
+library(ggplot2) # Data visualization
+library(readr) # CSV file I/O, e.g. the read_csv function
+
+```
+
+###A. Clean, prepare and load the data
+```{r echo = TRUE}
+
+####Que1. First read the two data sets into data frames beer Data Frame and brewery Data Frame from csv files. 
+### The columns (variables) of each data frame were custom named to be more readable and to provide a handle to merge the data.Create column for Brewery ID that is common to both datasets.
+# Read beer data from csv file and put into brewery Data Frame data frame.Then rename columns to be more readable.
+
+BeerDataFrame <- read.csv("./DataFilesFolder/Beers.csv",header=TRUE,sep=",",stringsAsFactors = TRUE, encoding = "UTF-8")
+```
+
+## Renaming Brewery_id to Brew_ID to satisfy merging requirement
+```{r echo = TRUE}
+names(BeerDataFrame) <- c("Beer_Name","Beer_ID","Alcohol_By_Volume","Bitterness_Units","Brewery_ID",
+                   "Beer_Style","Ounces") # rename table columns
+#BeerDataFrame
+```
+
+# Taking a quick look at the dataset
+```{r echo = TRUE}
+glimpse(BeerDataFrame)
+```
+
+# Read Brewery data from csv file then put into Brewery Data Frame. Then rename columns to be more readable.
+```{r echo = TRUE}
+BreweryDataFrame <- read.csv("./DataFilesFolder/Breweries.csv",header=TRUE,sep=",",stringsAsFactors = FALSE)
+
+# Renaming Brewery_id to Brew_ID to satisfy merging requirement
+names(BreweryDataFrame) <- c("Brewery_ID","Brewery_Name","City","State") # rename table columns
+
+
+# Taking a quick look at the data set summary in display
+glimpse(BreweryDataFrame)
+```
+
+
+#1: How many breweries are present in each state?
+```{r echo = TRUE}
+# How many breweries are present in each state?
+BreweryperState <- table(BreweryDataFrame$State)
+BreweryperState
+```
+
+
+#2:
+#Merged Brewery and Beer data into the BrewDataFrame
+```{r echo = TRUE}
+AllBeerDataFrame <- merge.data.frame(BreweryDataFrame, BeerDataFrame, by="Brewery_ID")
+#AllBeerDataFrame
+```
+
+#ii): # print first 6 rows of AllBeerDataFrame
+```{r echo = TRUE}
+head(AllBeerDataFrame, n=6)
+```
+
+#iii) # print last 6 rows of AllBeerDataFrame
+```{r echo = TRUE}
+tail(AllBeerDataFrame, n=6)
+```
+
+
+
+#3. Address the missing values in each column.
+# Code to replace missing values with the mean // 
+```{r echo = TRUE}
+BeerDataFrame_impute_mean <- data.frame(
+  sapply(
+    BeerDataFrame,
+    function(x) ifelse(is.na(x),
+                       mean(x, na.rm = TRUE),
+                       x)))
+#Output of the cleaed dataset without missing values
+#BeerDataFrame_impute_mean
+```
+
+
+
